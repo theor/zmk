@@ -30,6 +30,8 @@ LOG_MODULE_DECLARE(zmk, CONFIG_ZMK_LOG_LEVEL);
 #include <zmk/events/position_state_changed.h>
 #include <zmk/events/sensor_event.h>
 #include <zmk/events/battery_state_changed.h>
+#include <zmk/events/split_peripheral_status_changed.h>
+
 #include <zmk/pointing/input_split.h>
 #include <zmk/hid_indicators_types.h>
 #include <zmk/physical_layouts.h>
@@ -1292,4 +1294,12 @@ void peripheral_event_work_callback(struct k_work *work) {
                 ev.event.data.key_position_event.position);
         zmk_split_transport_central_peripheral_event_handler(&bt_central, ev.source, ev.event);
     }
+}
+
+bool zmk_split_bt_central_peripheral_is_connected(uint8_t index) {
+    // If index is out of range always not connected
+    if (index >= ZMK_SPLIT_BLE_PERIPHERAL_COUNT)
+        return false;
+    else
+        return (peripherals[index].state == PERIPHERAL_SLOT_STATE_CONNECTED);
 }
